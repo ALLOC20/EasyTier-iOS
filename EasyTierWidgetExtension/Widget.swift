@@ -136,18 +136,16 @@ struct VPNStatusWidgetView: View {
                     if #available(iOS 17.0, macOS 14.0, *) {
                         Button(text, intent: ToggleVPNConnectionIntent())
                     } else {
-                        Button(text) {
-                            Task {
-                                _ = try? await ToggleVPNConnectionIntent().perform()
-                            }
-                        }
+                        // Interactive widget buttons require iOS 17+; below that
+                        // the button is display-only (AppIntent is unavailable).
+                        Button(text) {}
                     }
                 }
                 .lineLimit(1)
                 .controlSize(family == .systemSmall ? .small : .regular)
                 .tint(entry.isConnected ? Color.red : Color.accentColor)
                 .buttonStyle(.borderedProminent)
-                .widgetAccentable()
+                .compatWidgetAccentable()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -168,6 +166,7 @@ struct EasyTierStatusWidget: Widget {
     }
 }
 
+@available(iOS 16.0, *)
 struct ToggleVPNConnectionIntent: AppIntent {
     static let title: LocalizedStringResource = "toggle_vpn"
 
@@ -194,6 +193,16 @@ extension View {
     func widgetBackgroundStyle() -> some View {
         if #available(iOS 17.0, macOS 14.0, *) {
             self.containerBackground(.fill.tertiary, for: .widget)
+        } else {
+            self
+        }
+    }
+
+    // widgetAccentable(_:) requires iOS 16+; on iOS 15 it is a no-op.
+    @ViewBuilder
+    func compatWidgetAccentable() -> some View {
+        if #available(iOSApplicationExtension 16.0, macOSApplicationExtension 13.0, *) {
+            self.widgetAccentable()
         } else {
             self
         }

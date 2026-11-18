@@ -47,7 +47,7 @@ extension View {
             return self.navigationDestination(item: item) { _ in
                 destination()
             }
-        } else {
+        } else if #available(iOS 16.0, macOS 13.0, *) {
             return self.navigationDestination(
                 isPresented: Binding(
                     get: { item.wrappedValue != nil },
@@ -60,6 +60,25 @@ extension View {
             ) {
                 destination()
             }
+        } else {
+            // iOS 15: navigationDestination is unavailable; use a hidden
+            // programmatic NavigationLink inside the (stack-style) NavigationView.
+            return self.background(
+                NavigationLink(
+                    destination: destination(),
+                    isActive: Binding(
+                        get: { item.wrappedValue != nil },
+                        set: { isPresented in
+                            if !isPresented {
+                                item.wrappedValue = nil
+                            }
+                        }
+                    ),
+                    label: { EmptyView() }
+                )
+                .opacity(0)
+                .buttonStyle(.plain)
+            )
         }
     }
 }

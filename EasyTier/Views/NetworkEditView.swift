@@ -28,15 +28,27 @@ struct NetworkEditView: View {
     var primaryColumn: some View {
         Group {
 #if os(iOS)
-            List(selection: $selectedPane) {
-                basicSettings
-                NavigationLink("advanced_settings", value: EditPane.advanced)
-                NavigationLink("dns_settings", value: EditPane.dns)
-                NavigationLink("route_settings", value: EditPane.route)
-                NavigationLink("port_forwards", value: EditPane.portForwards)
-                NavigationLink("acl.title", value: EditPane.acl)
+            if #available(iOS 16.0, *) {
+                List(selection: $selectedPane) {
+                    basicSettings
+                    NavigationLink("advanced_settings", value: EditPane.advanced)
+                    NavigationLink("dns_settings", value: EditPane.dns)
+                    NavigationLink("route_settings", value: EditPane.route)
+                    NavigationLink("port_forwards", value: EditPane.portForwards)
+                    NavigationLink("acl.title", value: EditPane.acl)
+                }
+                .compatScrollDismissesKeyboard()
+            } else {
+                List {
+                    basicSettings
+                    NavigationLink("advanced_settings") { advancedSettings }
+                    NavigationLink("dns_settings") { dnsSettings }
+                    NavigationLink("route_settings") { routeSettings }
+                    NavigationLink("port_forwards") { portForwardsSettings }
+                    NavigationLink("acl.title") { ACLSettingsView(acl: $profile.acl) }
+                }
+                .compatScrollDismissesKeyboard()
             }
-            .scrollDismissesKeyboard(.immediately)
 #else
             Form {
                 basicSettings
@@ -46,7 +58,7 @@ struct NetworkEditView: View {
                 NavigationLink("port_forwards") { portForwardsSettings }
                 NavigationLink("acl.title") { ACLSettingsView(acl: $profile.acl) }
             }
-            .formStyle(.grouped)
+            .compatGroupedForm()
 #endif
         }
     }
@@ -77,7 +89,7 @@ struct NetworkEditView: View {
                 .ignoresSafeArea()
             }
         }
-        .scrollDismissesKeyboard(.immediately)
+        .compatScrollDismissesKeyboard()
     }
 
     var basicSettings: some View {
@@ -234,14 +246,13 @@ struct NetworkEditView: View {
                 )
                 if profile.enableSecureMode {
                     LabeledContent("local_private_key") {
-                        TextField(
+                        AdaptiveVerticalTextField(
                             "common_text.empty",
                             text: Binding(
                                 get: { profile.secureModeLocalPrivateKey },
                                 set: { profile.updateSecureModePrivateKey($0) }
                             ),
-                            prompt: Text("common_text.empty"),
-                            axis: .vertical
+                            prompt: Text("common_text.empty")
                         )
                         .labelsHidden()
                         .font(.body.monospaced())
@@ -374,8 +385,8 @@ struct NetworkEditView: View {
             }
         }
         .navigationTitle("advanced_settings")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
+        .compatScrollDismissesKeyboard()
+        .compatGroupedForm()
         .listEditingToolbar(
             isVisible: !profile.listenerURLs.isEmpty
                 || (profile.enableRelayNetworkWhitelist && !profile.relayNetworkWhitelist.isEmpty)
@@ -429,8 +440,8 @@ struct NetworkEditView: View {
             }
         }
         .navigationTitle("dns_settings")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
+        .compatScrollDismissesKeyboard()
+        .compatGroupedForm()
         .listEditingToolbar(
             isVisible: profile.enableOverrideDNS && !profile.overrideDNS.isEmpty
         )
@@ -474,11 +485,11 @@ struct NetworkEditView: View {
             }
         }
         .navigationTitle("route_settings")
-        .scrollDismissesKeyboard(.immediately)
+        .compatScrollDismissesKeyboard()
         .sheet(isPresented: $showProxyCIDREditor) {
             proxyCIDREditor
         }
-        .formStyle(.grouped)
+        .compatGroupedForm()
         .listEditingToolbar(
             isVisible: !profile.proxyCIDRs.isEmpty
                 || !profile.exitNodes.isEmpty
@@ -548,8 +559,8 @@ struct NetworkEditView: View {
             })
         }
         .navigationTitle("port_forwards")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
+        .compatScrollDismissesKeyboard()
+        .compatGroupedForm()
         .listEditingToolbar(isVisible: !profile.portForwards.isEmpty)
     }
     
@@ -582,7 +593,7 @@ struct NetworkEditView: View {
                 }
             })
         }
-        .formStyle(.grouped)
+        .compatGroupedForm()
     }
     
     var proxyCIDREditor: some View {
@@ -602,7 +613,7 @@ struct NetworkEditView: View {
                     }
                 }
             }
-            .formStyle(.grouped)
+            .compatGroupedForm()
             .navigationTitle("common_text.edit_proxy_cidr")
             .adaptiveNavigationBarTitleInline()
             .toolbar {
@@ -663,15 +674,14 @@ struct PeerPublicKeyEditor: View {
                 }
 
                 Section {
-                    TextField(
+                    AdaptiveVerticalTextField(
                         "peer_public_key",
                         text: $publicKey,
-                        prompt: Text("peer_public_key"),
-                        axis: .vertical
+                        prompt: Text("peer_public_key")
                     )
                     .labelsHidden()
                     .font(.body.monospaced())
-                    .lineLimit(2...4)
+                    .compatLineLimit(2...4)
                     .adaptiveNoTextInputAutocapitalization()
                     .autocorrectionDisabled()
 
@@ -695,7 +705,7 @@ struct PeerPublicKeyEditor: View {
                     }
                 }
             }
-            .formStyle(.grouped)
+            .compatGroupedForm()
             .navigationTitle("set_peer_public_key")
             .adaptiveNavigationBarTitleInline()
             .toolbar {

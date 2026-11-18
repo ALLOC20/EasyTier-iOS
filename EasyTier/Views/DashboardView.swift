@@ -213,7 +213,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     }
                 }
             }
-            .formStyle(.grouped)
+            .compatGroupedForm()
         } else {
             WebManagementEditView(
                 server: $webServer,
@@ -449,7 +449,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
 #endif
                 }
             }
-            .formStyle(.grouped)
+            .compatGroupedForm()
             .navigationTitle("device.management")
             .adaptiveNavigationBarTitleInline()
             .toolbar {
@@ -463,25 +463,22 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                 isVisible: !ProfileStore.loadIndexOrEmpty().isEmpty,
                 placement: .cancellationAction
             )
-            .alert("add_new_network", isPresented: $showNewNetworkAlert) {
-                TextField("config_name", text: $newNetworkInput)
-                    .adaptiveNoTextInputAutocapitalization()
-                if #available(iOS 26.0, macOS 26.0, *) {
-                    Button(role: .cancel) {}
-                    Button("network.create", role: .confirm, action: createProfile)
-                } else {
-                    Button("common.cancel") {}
-                    Button("network.create", action: createProfile)
-                }
-            }
-            .alert("edit_config_name", isPresented: $showEditConfigNameAlert) {
-                TextField("config_name", text: $editConfigNameInput)
-                    .adaptiveNoTextInputAutocapitalization()
-                Button("common.cancel") {}
-                Button("save") {
-                    commitConfigNameEdit()
-                }
-            }
+            .adaptiveTextFieldAlert(
+                title: "add_new_network",
+                prompt: "config_name",
+                isPresented: $showNewNetworkAlert,
+                text: $newNetworkInput,
+                confirmTitle: "network.create",
+                onConfirm: createProfile
+            )
+            .adaptiveTextFieldAlert(
+                title: "edit_config_name",
+                prompt: "config_name",
+                isPresented: $showEditConfigNameAlert,
+                text: $editConfigNameInput,
+                confirmTitle: "save",
+                onConfirm: commitConfigNameEdit
+            )
         }
     }
 
@@ -562,7 +559,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             webStatusTask = Task { @MainActor in
                 while !Task.isCancelled {
                     refreshWebStatus()
-                    try? await Task.sleep(for: .seconds(2))
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
                 }
             }
         }

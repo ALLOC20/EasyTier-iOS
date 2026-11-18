@@ -20,11 +20,10 @@ struct WebManagementEditView: View {
         Form {
             Section {
                 LabeledContent("web_management.server.placeholder") {
-                    TextField(
+                    AdaptiveVerticalTextField(
                         "tcp://et-web.console.easytier.net:22020/your_token",
                         text: $server,
-                        prompt: Text("tcp://localhost:22020/your_token"),
-                        axis: .vertical
+                        prompt: Text("tcp://localhost:22020/your_token")
                     )
                     .labelsHidden()
                     .multilineTextAlignment(.trailing)
@@ -62,7 +61,7 @@ struct WebManagementEditView: View {
                 }
             }
         }
-        .formStyle(.grouped)
+        .compatGroupedForm()
         .alert("web_management.machine_id.reset_confirm_title", isPresented: $showResetMachineIDAlert) {
             Button("common.cancel", role: .cancel) {}
             Button("reset", role: .destructive) {

@@ -65,7 +65,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             AdaptiveNavigation(primaryColumn, secondaryColumn, showNav: $selectedPane)
                 .navigationTitle("settings")
                 .adaptiveNavigationBarTitleInline()
-                .scrollDismissesKeyboard(.immediately)
+                .compatScrollDismissesKeyboard()
         }
     }
     
@@ -79,7 +79,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             Form {
                 settingsContent
             }
-            .formStyle(.grouped)
+            .compatGroupedForm()
 #endif
         }
         .alert(item: $settingsErrorMessage) { msg in

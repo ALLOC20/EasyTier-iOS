@@ -75,8 +75,8 @@ struct ACLSettingsView: View {
             }
         }
         .navigationTitle("acl.title")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
+        .compatScrollDismissesKeyboard()
+        .compatGroupedForm()
         .confirmationDialog(
             "acl.disable_confirmation",
             isPresented: $showDisableConfirmation,
@@ -203,8 +203,8 @@ private struct ACLChainEditorView: View {
             }
 
             Section("acl.chain_description") {
-                TextField("acl.chain_description_placeholder", text: $chain.description, axis: .vertical)
-                    .lineLimit(2...4)
+                AdaptiveVerticalTextField("acl.chain_description_placeholder", text: $chain.description)
+                    .compatLineLimit(2...4)
             }
 
             Section {
@@ -237,8 +237,8 @@ private struct ACLChainEditorView: View {
             }
         }
         .navigationTitle(chain.name.isEmpty ? "ACL Chain" : chain.name)
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
+        .compatScrollDismissesKeyboard()
+        .compatGroupedForm()
         .listEditingToolbar(isVisible: !chain.rules.isEmpty)
     }
 
@@ -351,8 +351,8 @@ private struct ACLRuleEditorView: View {
             }
 
             Section("acl.rule_description") {
-                TextField("acl.rule_description_placeholder", text: $rule.description, axis: .vertical)
-                    .lineLimit(2...4)
+                AdaptiveVerticalTextField("acl.rule_description_placeholder", text: $rule.description)
+                    .compatLineLimit(2...4)
             }
 
             ACLStringListEditor(
@@ -422,8 +422,8 @@ private struct ACLRuleEditorView: View {
             }
         }
         .navigationTitle(rule.name.isEmpty ? String(localized: "acl.edit_rule") : rule.name)
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
+        .compatScrollDismissesKeyboard()
+        .compatGroupedForm()
         .onChange(of: rule.rateLimit) { newValue in
             if newValue > 0 && rule.burstLimit == 0 {
                 rule.burstLimit = max(1, newValue)
@@ -579,8 +579,8 @@ private struct ACLGroupEditorView: View {
             }
         }
         .navigationTitle("acl.groups")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
+        .compatScrollDismissesKeyboard()
+        .compatGroupedForm()
         .listEditingToolbar(isVisible: !acl.aclV1.group.declares.isEmpty)
         .sheet(item: $editingGroup) { context in
             NavigationStack {
@@ -731,7 +731,7 @@ private struct ACLGroupIdentityEditorView: View {
         }
         .navigationTitle("acl.edit_group")
         .adaptiveNavigationBarTitleInline()
-        .formStyle(.grouped)
+        .compatGroupedForm()
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button {

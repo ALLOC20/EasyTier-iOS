@@ -8,7 +8,7 @@ import EasyTierShared
 @main
 struct ControlWidgetsBundle: WidgetBundle {
     var body: some Widget {
-        if #available(iOS 18.0, macOS 26.0, *) {
+        if #available(iOSApplicationExtension 18.0, macOSApplicationExtension 26.0, *) {
             EasyTierControlWidget()
         }
         EasyTierStatusWidget()
@@ -55,6 +55,7 @@ extension EasyTierControlWidget {
     }
 }
 
+@available(iOS 18.0, *)
 struct ToggleVPNIntent: SetValueIntent {
     static let title: LocalizedStringResource = "toggle_vpn"
 
