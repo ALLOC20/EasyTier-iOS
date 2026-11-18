@@ -149,7 +149,7 @@ struct AdaptiveVerticalTextField: View {
 
     init(_ titleKey: LocalizedStringKey, text: Binding<String>, prompt: Text? = nil) {
         self.titleKey = titleKey
-        self.text = text
+        self._text = text
         self.prompt = prompt
     }
 
@@ -318,18 +318,13 @@ private struct VerticalBarAwareLabelStyle: ViewModifier {
 }
 
 extension ToolbarContent {
-    /// Prefers placing the item in the vertical bar (e.g. on iPhone Duo) when one is present.
-    @ToolbarContentBuilder
+    /// No-op kept for call-site compatibility: the iOS 27.1 vertical-bar
+    /// preference (axisBehavior(.verticalPreferred)) required conditional
+    /// ToolbarContentBuilder support (buildEither), which is iOS 16+ and
+    /// therefore unavailable at the iOS 15 deployment target. The cosmetic
+    /// iPhone Duo vertical-bar placement is dropped.
     func adaptiveVerticalPreferred() -> some ToolbarContent {
-#if os(iOS)
-        if #available(iOS 27.1, *) {
-            self.axisBehavior(.verticalPreferred)
-        } else {
-            self
-        }
-#else
         self
-#endif
     }
 }
 

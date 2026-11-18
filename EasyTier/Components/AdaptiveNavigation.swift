@@ -39,16 +39,17 @@ extension View {
         modifier(ColumnGutter(edge: edge, minimum: minimum))
     }
 
+    @ViewBuilder
     func adaptiveNavigationDestination<Enum: Identifiable & Hashable, Destination: View>(
         item: Binding<Enum?>,
         @ViewBuilder destination: @escaping () -> Destination
     ) -> some View {
         if #available(iOS 17.0, macOS 14.0, *) {
-            return self.navigationDestination(item: item) { _ in
+            self.navigationDestination(item: item) { _ in
                 destination()
             }
         } else if #available(iOS 16.0, macOS 13.0, *) {
-            return self.navigationDestination(
+            self.navigationDestination(
                 isPresented: Binding(
                     get: { item.wrappedValue != nil },
                     set: { isPresented in
@@ -63,7 +64,7 @@ extension View {
         } else {
             // iOS 15: navigationDestination is unavailable; use a hidden
             // programmatic NavigationLink inside the (stack-style) NavigationView.
-            return self.background(
+            self.background(
                 NavigationLink(
                     destination: destination(),
                     isActive: Binding(

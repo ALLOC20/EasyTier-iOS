@@ -254,7 +254,13 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
                 Link("about.privacy_policy", destination: URL(string: "https://easytier.cn/guide/privacy.html")!)
                 
 #if os(iOS)
-                NavigationLink("about.license", value: SettingsPane.license)
+                if #available(iOS 16.0, *) {
+                    NavigationLink("about.license", value: SettingsPane.license)
+                } else {
+                    NavigationLink("about.license") {
+                        openSourceLicenseView
+                    }
+                }
 #else
                 NavigationLink("about.license") {
                     openSourceLicenseView
