@@ -9,8 +9,8 @@ import SwiftUI
 // SwiftUI's for all in-target call sites; on iOS 16+/macOS 13+ it delegates to
 // the native implementation, on iOS 15 it falls back to an HStack row.
 struct LabeledContent<Label: View, Content: View>: View {
-    @ViewBuilder let label: Label
-    @ViewBuilder let content: Content
+    let label: Label
+    let content: Content
     // Only the `value:` Text initializers render their content secondary on
     // iOS 16+; closure contents (controls, custom views) stay unstyled.
     private let valueIsText: Bool
